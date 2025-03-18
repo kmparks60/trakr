@@ -1,9 +1,7 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/database");
 const TestResult = require("./TestResult");
 
-User.hasMany(TestResult, { foreignKey: "userId" });
-TestResult.belongsTo(User, { foreignKey: "userId" });
 
 const User = sequelize.define("User", {
     auth0Id: {
@@ -15,6 +13,14 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    }
 });
+
+User.hasMany(TestResult, { foreignKey: "userId" });
+TestResult.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = User;

@@ -1,16 +1,17 @@
-const { expressjwt } = require("express-jwt");
-const jwksRsa = require("jwks-rsa");
+const jwt = require("jsonwebtoken");
 
-const checkJwt = expressjwt({
-    secret: jwksRsa.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
-    }),
-    audience: process.env.AUTH0_API_IDENTIFIER,
-    issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-    algorithms: ["HS256"],
-});
+module.exports = function (req, res, next) {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-module.exports = { checkJwt };
+    if (!token) {
+        return res.status(401).json({ msg: "No token, authorization denied" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded.userId;
+        next();
+    } catch (error) {
+        res.status(401).json({ msg: "Invalid token" });
+    }
+};

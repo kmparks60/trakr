@@ -4,23 +4,30 @@ const TestResult = require("./TestResult");
 
 
 const User = sequelize.define("User", {
-    auth0Id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
     username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
-    }
+        unique: true,
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    tableName: "Users",
 });
 
-User.hasMany(TestResult, { foreignKey: "userId" });
-TestResult.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(TestResult, { foreignKey: "id" });
+TestResult.belongsTo(User, { foreignKey: "id" });
 
 module.exports = User;

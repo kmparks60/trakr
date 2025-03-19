@@ -25,3 +25,6 @@ dist-ssr
 
 # Typing prompts
 db.json
+
+# Env files
+.env

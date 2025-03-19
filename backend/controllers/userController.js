@@ -12,9 +12,11 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.id, { attributes: ["id", "email"] });
+        const user = await User.findByPk(req.params.id, { attributes: ["id", "email", "username"] });
 
-        if (!user) return res.status(404).json({ msg: "User not found" });
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
 
         res.json(user);
     } catch (err) {
@@ -25,10 +27,11 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
+        const userId = req.userId;
         const user = await User.findByPk(req.params.id);
 
-        if (!user || user.id !== req.user) {
-            return res.status(404).json({ msg: "User not found" });
+        if (!user || user.id !== userId) {
+            return res.status(403).json({ msg: "You are not authorized to update this user" });
         }
 
         await user.update(req.body);
@@ -41,14 +44,15 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
+        const userId = req.userId;
         const user = await User.findByPk(req.params.id);
 
-        if (!user || user.id !== req.user) {
-            return res.status(404).json({ msg: "User not found" });
+        if (!user || user.id !== userId) {
+            return res.status(403).json({ msg: "You are not authorized to delete this user" });
         }
 
         await user.destroy();
-        res.json({ msg: "User deleted" });
+        res.json({ msg: "User deleted successfully" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });

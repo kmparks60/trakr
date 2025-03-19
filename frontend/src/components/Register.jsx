@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+	const [username, SetUsername] = useState("");
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -11,7 +12,7 @@ const Register = () => {
 	const handleRegister = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post('http://localhost:5000/api/auth/register', { email, password });
+			const response = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
 			localStorage.setItem('token', response.data.token);
 			navigate('/');
 		} catch (err) {
@@ -25,6 +26,14 @@ const Register = () => {
 				<h2 className="text-2xl font-semibold text-center text-gray-700">Register</h2>
 				{error && <div className="text-red-500 text-center mb-4">{error}</div>}
 				<form onSubmit={handleRegister} className="mt-4 space-y-4">
+				<div>
+					<label htmlFor="username" className="block text-sm font-medium text-gray-600">Username</label>
+					<input type="text" id="username" placeholder="Enter your username"
+					value={username}
+					onChange={(e) => SetUsername(e.target.value)}
+					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+					/>
+				</div>
 				<div>
 					<label htmlFor="email" className="block text-sm font-medium text-gray-600">Email</label>
 					<input type="email" id="email" placeholder="Enter your email"

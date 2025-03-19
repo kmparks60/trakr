@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const NavBar = () => {
+function NavBar() {
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
 	const [username, setUsername] = useState('');
@@ -23,26 +23,30 @@ const NavBar = () => {
 	};
 
 	useEffect(() => {
+		const token = localStorage.getItem('token');
 		const userId = getUserIdFromToken();
-		if (userId) {
-			axios.get(`http://localhost:5000/api/users/${userId}`, {
-				headers: {
-					'Authorization': `Bearer ${token}`
-				}
+		if (userId && token) {
+		  axios
+			.get(`http://localhost:5000/api/users/${userId}`, {
+			  headers: {
+				Authorization: `Bearer ${token}`,
+			  },
 			})
-				.then(response => {
-					console.log(response.data);
-					setUsername(response.data.username);
-				})
-				.catch(error => {
-					console.error("Error fetching username:", error);
-				});
+			.then((response) => {
+			  setUsername(response.data.username);
+			})
+			.catch((error) => {
+			  console.error('Error fetching username:', error);
+			});
+		} else {
+			setUsername('');
 		}
 	}, [token]);
 
 	const handleLogout = () => {
 		localStorage.removeItem('token');
-		navigate('/');
+    	setUsername('');
+    	navigate('/');
 	};
 
 	return (

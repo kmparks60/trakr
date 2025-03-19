@@ -8,7 +8,7 @@ function Home() {
 				<h1 className="text-4xl font-bold">Welcome to the Typing Game</h1>
 				<div className="mt-4">
 					<Link to="/test" className="px-4 py-2 bg-blue-500 text-white rounded-lg">Start Test</Link>
-					<Link to="/leaderboard" className="ml-4 px-4 py-2 bg-green-500 text-white rounded-lg">Leaderboard</Link>
+					<Link to="/timeboard" className="ml-4 px-4 py-2 bg-green-500 text-white rounded-lg">Leaderboard</Link>
 				</div>
 			</div>
 		</>

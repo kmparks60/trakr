@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const response = await axios.post('http://localhost:5000/api/auth/login', { usernameOrEmail, password });
       localStorage.setItem('token', response.data.token);
       navigate('/');
     } catch (err) {
@@ -21,18 +21,18 @@ const Login = () => {
 
   return (
     <div className="flex justify-center min-h-screen bg-[#001F3F]">
-      <div className="w-full max-w-md p-6 mt-28 bg-[#FFFFFF] rounded-lg shadow-md max-h-[350px]">
+      <div className="w-full max-w-md p-6 mt-28 bg-[#FFFFFF] rounded-lg shadow-md max-h-[400px]">
         <h2 className="text-2xl font-semibold text-center text-[#001F3F]">Login</h2>
         {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <form onSubmit={handleLogin} className="mt-4 space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#001F3F]">Email</label>
+            <label htmlFor="usernameOrEmail" className="block text-sm font-medium text-[#001F3F]">Username or Email</label>
             <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="usernameOrEmail"
+              placeholder="Enter your username or email"
+              value={usernameOrEmail}
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
               className="w-full px-4 py-2 border border-[#FFE8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8532] text-[#001F3F]"
             />
           </div>

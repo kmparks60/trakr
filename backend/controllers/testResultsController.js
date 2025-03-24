@@ -22,9 +22,9 @@ exports.getUserResults = async (req, res) => {
 
 exports.createTestResult = async (req, res) => {
     try {
-        const { duration, wpm, accuracy, bestWPM } = req.body;
+        const { userId, duration, wpm, accuracy, bestWPM } = req.body;
         const newResult = await TestResult.create({
-            userId: req.user,
+            userId,
             duration,
             wpm,
             accuracy,
@@ -71,7 +71,7 @@ exports.deleteTestResult = async (req, res) => {
     try {
         const testResult = await TestResult.findByPk(id);
 
-        if (!result) {
+        if (!testResult) {
             return res.status(404).json({ msg: "Test result not found" });
         }
 

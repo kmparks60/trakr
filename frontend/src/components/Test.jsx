@@ -12,6 +12,12 @@ function Test() {
 	const [typedChars, setTypedChars] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [testEnded, setTestEnded] = useState(false);
+	const [token, setToken] = useState(null);
+	
+	useEffect(() => {
+		const storedToken = localStorage.getItem('token');
+		setToken(storedToken);
+	}, []);
 
 	useEffect(() => {
 		resetTest();
@@ -70,7 +76,60 @@ function Test() {
 		setTestEnded(true);
 		const wordsTyped = inputValue.trim().split(/\s+/).length;
 		setWpm(wordsTyped);
+
+		saveTestResult(wordsTyped, accuracy, 60);
 	};
+
+	const decodeJWT = (token) => {
+		try {
+			const [header, payload] = token.split(".");
+			const decodedPayload = JSON.parse(atob(payload));
+			return decodedPayload;
+		} catch (error) {
+			console.error("Error decoding JWT:", error);
+			return null;
+		}
+	};
+
+	const saveTestResult = async (wpm, accuracy, timeLeft) => {
+		try {
+			if (!token) {
+				return; 
+			}
+
+			const decodedToken = decodeJWT(token);
+
+			const userId = decodedToken?.userId;
+
+			if (!userId) {
+				throw new Error("User ID not found in the token");
+			}
+
+			const response = await fetch("http://localhost:5000/api/testResults", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`,
+				},
+				body: JSON.stringify({
+					userId: userId,
+					duration: timeLeft,
+					wpm: wpm,
+					accuracy: accuracy,
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to save test result: ${response.statusText}`);
+			}
+
+		} catch (error) {
+			console.error("Error saving test result:", error);
+		}
+	};
+
+	useEffect(() => {
+	}, [inputValue, accuracy]);
 
 	const closeModal = () => {
 		setTestEnded(false);
@@ -147,6 +206,6 @@ function Test() {
 			)}
 		</div>
 	);
-};
+}
 
 export default Test;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { promptsData } from "../../db.json";
+import { Link } from "react-router-dom";
 
 function Test() {
 	const [prompt, setPrompt] = useState("");
@@ -13,125 +14,136 @@ function Test() {
 	const [testEnded, setTestEnded] = useState(false);
 
 	useEffect(() => {
-	resetTest();
+		resetTest();
 	}, []);
 
 	useEffect(() => {
-	let timer;
-	if (isActive && timeLeft > 0) {
-		timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-	} else if (timeLeft === 0) {
-		endTest();
-	}
-	return () => clearTimeout(timer);
+		let timer;
+		if (isActive && timeLeft > 0) {
+			timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+		} else if (timeLeft === 0) {
+			endTest();
+		}
+		return () => clearTimeout(timer);
 	}, [isActive, timeLeft]);
 
 	const resetTest = () => {
-	if (!promptsData || promptsData.length === 0) {
-		console.error("Error: promptsData is undefined or empty.");
-		return;
-	}
+		if (!promptsData || promptsData.length === 0) {
+			console.error("Error: promptsData is undefined or empty.");
+			return;
+		}
 
-	const randomPrompt = promptsData[Math.floor(Math.random() * promptsData.length)];
-	setPrompt(randomPrompt);
-	setInputValue("");
-	setTimeLeft(60);
-	setIsActive(false);
-	setTestEnded(false);
-	setWpm(0);
-	setAccuracy(100);
-	setTypedChars(0);
-	setMistakes(0);
+		const randomPrompt = promptsData[Math.floor(Math.random() * promptsData.length)];
+		setPrompt(randomPrompt);
+		setInputValue("");
+		setTimeLeft(60);
+		setIsActive(false);
+		setTestEnded(false);
+		setWpm(0);
+		setAccuracy(100);
+		setTypedChars(0);
+		setMistakes(0);
 	};
 
 	const handleInputChange = (e) => {
-	if (!isActive) setIsActive(true);
-	const userInput = e.target.value;
-	setInputValue(userInput);
-	setTypedChars(userInput.length);
+		if (!isActive) setIsActive(true);
+		const userInput = e.target.value;
+		setInputValue(userInput);
+		setTypedChars(userInput.length);
 
-	let mistakesCount = 0;
-	const words = prompt.split(" ");
-	const userWords = userInput.split(" ");
+		let mistakesCount = 0;
+		const words = prompt.split(" ");
+		const userWords = userInput.split(" ");
 
-	userWords.forEach((word, index) => {
-		if (words[index] && word !== words[index]) mistakesCount++;
-	});
+		userWords.forEach((word, index) => {
+			if (words[index] && word !== words[index]) mistakesCount++;
+		});
 
-	setMistakes(mistakesCount);
-	const accuracyPercentage =
-		typedChars > 0 ? ((typedChars - mistakes) / typedChars) * 100 : 100;
-	setAccuracy(accuracyPercentage.toFixed(2));
+		setMistakes(mistakesCount);
+		const accuracyPercentage =
+			typedChars > 0 ? ((typedChars - mistakes) / typedChars) * 100 : 100;
+		setAccuracy(accuracyPercentage.toFixed(2));
 	};
 
 	const endTest = () => {
-	setIsActive(false);
-	setTestEnded(true);
-	const wordsTyped = inputValue.trim().split(/\s+/).length;
-	setWpm(wordsTyped);
+		setIsActive(false);
+		setTestEnded(true);
+		const wordsTyped = inputValue.trim().split(/\s+/).length;
+		setWpm(wordsTyped);
+	};
+
+	const closeModal = () => {
+		setTestEnded(false);
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-			<h1 className="text-3xl font-bold mb-4">Typing Test</h1>
+		<div className="flex flex-col items-center justify-start pt-4 pb-6 px-6 bg-[#001F3F]">
+			<h1 className="text-3xl font-bold mb-4 text-[#FFE8F0]">Start typing to begin</h1>
 
-			<div className="text-4xl font-bold text-blue-600 mb-4">
+			<div className="text-4xl font-bold text-[#FFE8F0] mb-4">
 				{timeLeft}s
 			</div>
 
-			<div className="bg-white border-2 border-gray-300 p-6 w-full max-w-2xl rounded shadow-md relative">
-			<p className="whitespace-pre-wrap text-gray-700 text-lg leading-loose">
-				{prompt.split("").map((char, index) => {
-				let typedChar = inputValue[index] || "";
-				let textColor =
-					typedChar === char
-					? "text-blue-600"
-					: typedChar
-					? "text-red-600"
-					: "text-gray-400";
+			<div className="bg-[#FFFFFF] border-2 border-[#FFE8F0] p-6 w-full max-w-3xl rounded shadow-md relative">
+				<p className="whitespace-pre-wrap text-[#3a3a3a] text-lg leading-loose">
+					{prompt.split("").map((char, index) => {
+						let typedChar = inputValue[index] || "";
+						let textColor =
+							typedChar === char
+								? "text-[#001F3F]"
+								: typedChar
+								? "text-red-600"
+								: "text-gray-400";
 
-				return (
-					<span key={index} className={`${textColor}`}>
-					{char}
-					</span>
-				);
-				})}
-			</p>
+						return (
+							<span key={index} className={`${textColor}`}>
+								{char}
+							</span>
+						);
+					})}
+				</p>
 			</div>
 
 			<textarea
 				value={inputValue}
 				onChange={handleInputChange}
 				disabled={testEnded}
-				className="mt-4 p-2 w-full max-w-2xl h-20 border border-gray-300 rounded"
+				className="bg-[#FFFFFF] mt-4 p-2 w-full max-w-3xl h-20 border border-[#001F3F] rounded text-[#001F3F]"
 				placeholder="Start typing here..."
 			></textarea>
 
-			<div className="mt-4 flex space-x-4">
-				<button
-					onClick={endTest}
-					className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-				>
-					Stop
-				</button>
-				<button
-					onClick={resetTest}
-					className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-				>
-					Reset
-				</button>
+			<div className="mt-4 flex flex-col items-center space-y-4">
+				<div className="flex space-x-4">
+					<button onClick={endTest} className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
+						Stop
+					</button>
+					<button onClick={resetTest} className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
+						Reset
+					</button>
+				</div>
+				<Link to="/timeboard" className="px-4 py-2 bg-[#FF8532] text-[#FFFFFF] rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
+					Leaderboard
+				</Link>
 			</div>
 
 			{testEnded && (
-			<div className="mt-6 p-4 bg-white shadow-md rounded w-full max-w-md text-center">
-				<h2 className="text-2xl font-semibold mb-2">Test Results</h2>
-				<p>
-					<strong>WPM:</strong> {wpm}
-				</p>
-				<p>
-					<strong>Accuracy:</strong> {accuracy}%
-				</p>
-			</div>
+				<div className="fixed inset-0 flex justify-center items-center bg-transparent z-50">
+					<div className="bg-[#FFE8F0] p-6 rounded-lg w-full max-w-md text-center shadow-xl relative">
+						<h2 className="text-2xl font-semibold mb-2 text-[#001F3F]">Test Results</h2>
+						<p className="text-[#001F3F]">
+							<strong>WPM:</strong> {wpm}
+						</p>
+						<p className="text-[#001F3F]">
+							<strong>Accuracy:</strong> {accuracy}%
+						</p>
+						<button
+							onClick={closeModal}
+							className="mt-4 bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none"
+						>
+							Close
+						</button>
+					</div>
+				</div>
 			)}
 		</div>
 	);

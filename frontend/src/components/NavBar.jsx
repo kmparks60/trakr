@@ -1,92 +1,74 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function NavBar() {
 	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
-	const [username, setUsername] = useState('');
-
-	const getUserIdFromToken = () => {
-		if (token) {
-			try {
-				const tokenParts = token.split('.');
-				if (tokenParts.length === 3) {
-					const decoded = JSON.parse(atob(tokenParts[1]));
-					return decoded.userId || null;
-				}
-			} catch (error){
-				console.error("Error decoding token: ", error)
-			}
-		}
-		return null;
-	};
 
 	useEffect(() => {
 		const token = localStorage.getItem('token');
-		const userId = getUserIdFromToken();
-		if (userId && token) {
-		  axios
-			.get(`http://localhost:5000/api/users/${userId}`, {
-			  headers: {
-				Authorization: `Bearer ${token}`,
-			  },
-			})
-			.then((response) => {
-			  setUsername(response.data.username);
-			})
-			.catch((error) => {
-			  console.error('Error fetching username:', error);
-			});
-		} else {
-			setUsername('');
-		}
 	}, [token]);
 
 	const handleLogout = () => {
 		localStorage.removeItem('token');
-    	setUsername('');
     	navigate('/');
 	};
 
 	return (
-		<nav className="bg-indigo-600 text-white shadow-md py-4 px-6 flex justify-between items-center">
-			<div className="relative group">
-				<button className="text-white hover:text-indigo-200 focus:outline-none">
-					<span className="font-semibold">Menu</span>
+		<nav className="bg-[#001F3F] text-white shadow-md py-4 px-8 flex justify-between items-center border-b-4 border-[#FFE8F0]">
+			<div className="flex space-x-6">
+				<button 
+					className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
+					onClick={() => navigate('/')}
+				>
+					Home
 				</button>
-				<div className="absolute left-0 mt-2 w-40 bg-white text-gray-800 shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:block">
-					<Link to="/" className="block px-4 py-2 hover:bg-indigo-100">Home</Link>
-					<Link to="/test" className="block px-4 py-2 hover:bg-indigo-100">Test</Link>
-					<Link to="/timeboard" className="block px-4 py-2 hover:bg-indigo-100">Timeboard</Link>
-				</div>
+				<button 
+					className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
+					onClick={() => navigate('/timeboard')}
+				>
+					Leaderboard
+				</button>
 			</div>
 
 			<div className="flex-grow text-center">
-				{!token ? (
-				<Link to="/" className="text-2xl font-semibold text-white">Trakr</Link>
-				) : (
-				<span className="text-xl font-semibold">Welcome, {username}</span>
-				)}
+				<Link to="/" className="text-2xl font-semibold text-white">
+					<img 
+					src="https://64.media.tumblr.com/0148460d14734cf35d3d9f6cc9877e12/1786fc6644ea9e29-68/s540x810/a16a0bc3f979c04df9e3315b259e52632588d5d8.pnj" 
+					alt="Trakr Logo" 
+					className="md:h-18 mb-4 mx-auto" 
+					/>
+				</Link>
 			</div>
 
-			<div className="space-x-4">
+			<div className="space-x-4 flex items-center">
 				{!token ? (
-				<>
-					<Link to="/login" className="hover:text-indigo-200">Login</Link>
-					<Link to="/register" className="hover:text-indigo-200">Register</Link>
-				</>
+					<>
+					<button 
+						className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
+						onClick={() => navigate('/register')}
+					>
+						Sign Up
+					</button>
+					<button 
+						className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
+						onClick={() => navigate('/login')}
+					>
+						Login
+					</button>
+					</>
 				) : (
-				<button
-					onClick={handleLogout}
-					className="hover:text-indigo-200"
-				>
+					<button 
+					onClick={handleLogout} 
+					className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
+					>
 					Logout
-				</button>
+					</button>
 				)}
 			</div>
 		</nav>
 	);
-};
+}
 
 export default NavBar;

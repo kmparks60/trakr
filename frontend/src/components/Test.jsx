@@ -67,16 +67,18 @@ function Test() {
 		setTypedChars(totalTyped);
 		setMistakes(mistakesCount);
 
-		const accuracyPercentage = totalTyped > 0 ? (correctChars / totalTyped) * 100 : 100;
+		const accuracyPercentage = totalTyped > 0 ? (correctChars / totalTyped) * 100 : 0;
 		setAccuracy(accuracyPercentage.toFixed(2));
 	};
 
 	const endTest = () => {
 		setIsActive(false);
 		setTestEnded(true);
-		const wordsTyped = inputValue.trim().split(/\s+/).length;
-		setWpm(wordsTyped);
 
+		const trimmedInput = inputValue.trim();
+		const wordsTyped = trimmedInput === "" ? 0 : trimmedInput.split(/\s+/).length;
+
+		setWpm(wordsTyped);
 		saveTestResult(wordsTyped, accuracy, 60);
 	};
 

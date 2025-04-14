@@ -12,7 +12,7 @@ function App() {
     return (
         <div className="App">
             <NavBar />
-            <div className="container mx-auto px-4 py-6">
+            <div className="container mx-auto px-4">
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />

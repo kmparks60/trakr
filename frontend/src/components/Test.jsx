@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { promptsData } from "../../db.json";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 function Test() {
 	const [prompt, setPrompt] = useState("");
@@ -55,19 +55,19 @@ function Test() {
 		if (!isActive) setIsActive(true);
 		const userInput = e.target.value;
 		setInputValue(userInput);
-		setTypedChars(userInput.length);
 
-		let mistakesCount = 0;
-		const words = prompt.split(" ");
-		const userWords = userInput.split(" ");
+		let correctChars = 0;
+		for (let i = 0; i < userInput.length; i++) {
+			if (userInput[i] === prompt[i]) correctChars++;
+		}
 
-		userWords.forEach((word, index) => {
-			if (words[index] && word !== words[index]) mistakesCount++;
-		});
+		const totalTyped = userInput.length;
+		const mistakesCount = totalTyped - correctChars;
 
+		setTypedChars(totalTyped);
 		setMistakes(mistakesCount);
-		const accuracyPercentage =
-			typedChars > 0 ? ((typedChars - mistakes) / typedChars) * 100 : 100;
+
+		const accuracyPercentage = totalTyped > 0 ? (correctChars / totalTyped) * 100 : 100;
 		setAccuracy(accuracyPercentage.toFixed(2));
 	};
 
@@ -136,7 +136,7 @@ function Test() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-start pt-4 pb-6 px-6 bg-[#001F3F]">
+		<div className="flex flex-col items-center justify-start pb-6 px-6 bg-[#001F3F]">
 			<h1 className="text-3xl font-bold mb-4 text-[#FFE8F0]">Start typing to begin</h1>
 
 			<div className="text-4xl font-bold text-[#FFE8F0] mb-4">

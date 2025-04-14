@@ -180,14 +180,14 @@ function Test() {
 						Reset
 					</button>
 				</div>
-				<Link to="/timeboard" className="px-4 py-2 bg-[#FF8532] text-[#FFFFFF] rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
+				{/* <Link to="/timeboard" className="px-4 py-2 bg-[#FF8532] text-[#FFFFFF] rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
 					Leaderboard
-				</Link>
+				</Link> */}
 			</div>
 
 			{testEnded && (
 				<div className="fixed inset-0 flex justify-center items-center bg-transparent z-50">
-					<div className="bg-[#FFE8F0] p-6 rounded-lg w-full max-w-md text-center shadow-xl relative">
+					<div className="bg-[#FFE8F0] p-6 rounded-lg w-full max-w-md border border-4 border-red-500 text-center shadow-xl relative">
 						<h2 className="text-2xl font-semibold mb-2 text-[#001F3F]">Test Results</h2>
 						<p className="text-[#001F3F]">
 							<strong>WPM:</strong> {wpm}

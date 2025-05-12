@@ -7,33 +7,17 @@ const Timeboard = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("You must be logged in to view results.");
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await fetch("http://localhost:5000/api/results", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setResults(data.length ? data : []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const response = await fetch("http://localhost:5000/api/testResults/leaderboard"); // public route
+    if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+    const data = await response.json();
+    setResults(data.length ? data : []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+      };
 
     fetchResults();
   }, []);
@@ -49,7 +33,7 @@ const Timeboard = () => {
       {!loading && !error && results.length > 0 && (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-indigo-400">
               <th className="border p-2">Username</th>
               <th className="border p-2">WPM</th>
               <th className="border p-2">Accuracy</th>
@@ -59,10 +43,10 @@ const Timeboard = () => {
           <tbody>
             {results.map((result, index) => (
               <tr key={index} className="border">
-                <td className="border p-2">{result.username}</td>
+                <td className="border p-2">{result.User.username}</td>
                 <td className="border p-2">{result.wpm}</td>
                 <td className="border p-2">{result.accuracy}%</td>
-                <td className="border p-2">{result.test_duration} min</td>
+                <td className="border p-2">{result.duration}s</td>
               </tr>
             ))}
           </tbody>

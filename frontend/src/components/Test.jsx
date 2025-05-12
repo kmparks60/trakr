@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { promptsData } from "../../db.json";
-// import { Link } from "react-router-dom";
+import { promptsData } from "../assets/db.json";
+import { Link } from "react-router-dom";
 
 function Test() {
 	const [prompt, setPrompt] = useState("");
@@ -13,6 +13,7 @@ function Test() {
 	const [mistakes, setMistakes] = useState(0);
 	const [testEnded, setTestEnded] = useState(false);
 	const [token, setToken] = useState(null);
+	const [resultsSaved, setResultsSaved] = useState(false);
 	
 	useEffect(() => {
 		const storedToken = localStorage.getItem('token');
@@ -79,7 +80,6 @@ function Test() {
 		const wordsTyped = trimmedInput === "" ? 0 : trimmedInput.split(/\s+/).length;
 
 		setWpm(wordsTyped);
-		saveTestResult(wordsTyped, accuracy, 60);
 	};
 
 	const decodeJWT = (token) => {
@@ -93,42 +93,36 @@ function Test() {
 		}
 	};
 
-	const saveTestResult = async (wpm, accuracy, timeLeft) => {
-		try {
-			if (!token) {
-				return; 
+	const saveTestResult = async (wpm, accuracy, timeTaken) => {
+	try {
+		if (!token || resultsSaved) return;
+
+		const decodedToken = decodeJWT(token);
+		const userId = decodedToken?.userId;
+
+		if (!userId) throw new Error("User ID not found in the token");
+
+		const response = await fetch("http://localhost:5000/api/testResults", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				userId,
+				duration: timeTaken,
+				wpm,
+				accuracy,
+			}),
+		});
+
+		if (!response.ok) throw new Error(`Failed to save test result: ${response.statusText}`);
+
+		setResultsSaved(true);
+			} catch (error) {
+				console.error("Error saving test result:", error);
 			}
-
-			const decodedToken = decodeJWT(token);
-
-			const userId = decodedToken?.userId;
-
-			if (!userId) {
-				throw new Error("User ID not found in the token");
-			}
-
-			const response = await fetch("http://localhost:5000/api/testResults", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": `Bearer ${token}`,
-				},
-				body: JSON.stringify({
-					userId: userId,
-					duration: timeLeft,
-					wpm: wpm,
-					accuracy: accuracy,
-				}),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to save test result: ${response.statusText}`);
-			}
-
-		} catch (error) {
-			console.error("Error saving test result:", error);
-		}
-	};
+		};
 
 	useEffect(() => {
 	}, [inputValue, accuracy]);
@@ -182,30 +176,41 @@ function Test() {
 						Reset
 					</button>
 				</div>
-				{/* <Link to="/timeboard" className="px-4 py-2 bg-[#FF8532] text-[#FFFFFF] rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
+				<Link to="/timeboard" className="px-4 py-2 bg-[#FF8532] text-[#FFFFFF] rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none">
 					Leaderboard
-				</Link> */}
+				</Link>
 			</div>
 
 			{testEnded && (
-				<div className="fixed inset-0 flex justify-center items-center bg-transparent z-50">
-					<div className="bg-[#FFE8F0] p-6 rounded-lg w-full max-w-md border border-4 border-red-500 text-center shadow-xl relative">
-						<h2 className="text-2xl font-semibold mb-2 text-[#001F3F]">Test Results</h2>
-						<p className="text-[#001F3F]">
-							<strong>WPM:</strong> {wpm}
-						</p>
-						<p className="text-[#001F3F]">
-							<strong>Accuracy:</strong> {accuracy}%
-						</p>
+			<div className="fixed inset-0 flex justify-center items-center bg-transparent z-50">
+				<div className="bg-[#FFE8F0] p-6 rounded-lg w-full max-w-md border border-4 border-red-500 text-center shadow-xl relative">
+					<h2 className="text-2xl font-semibold mb-2 text-[#001F3F]">Test Results</h2>
+					<p className="text-[#001F3F]"><strong>WPM:</strong> {wpm}</p>
+					<p className="text-[#001F3F]"><strong>Accuracy:</strong> {accuracy}%</p>
+
+					<div className="mt-4 flex flex-col items-center space-y-2">
+						<button
+							onClick={() => saveTestResult(wpm, accuracy, 60 - timeLeft)}
+							disabled={resultsSaved}
+							className={`mt-4 py-2 px-6 rounded-md focus:outline-none ${
+								resultsSaved
+									? "bg-gray-400 text-white cursor-not-allowed"
+									: "bg-[#FF8532] text-[#FFFFFF] hover:bg-[#FFE8F0] hover:text-[#001F3F]"
+							}`}
+						>
+							{resultsSaved ? "Results Saved" : "Save Results"}
+						</button>
+
 						<button
 							onClick={closeModal}
-							className="mt-4 bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none"
+							className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none"
 						>
 							Close
 						</button>
 					</div>
 				</div>
-			)}
+			</div>
+		)}
 		</div>
 	);
 }

@@ -1,13 +1,41 @@
 const TestResult = require("../models/TestResult");
+const User = require("../models/User");
 
 exports.getAllResults = async (req, res) => {
     try {
-        const results = await TestResult.findAll();
+        const results = await TestResult.findAll({
+            include: {
+                model: User,
+                as: 'User',
+                attributes: { exclude: ["password", "email"] },
+            },
+        });
+
         res.json(results);
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });
     }
+};
+
+exports.getLeaderboard = async (req, res) => {
+  try {
+    const leaderboard = await TestResult.findAll({
+      order: [['wpm', 'DESC']], 
+      limit: 10, 
+      include: [
+        {
+          model: User, 
+          attributes: ['username'],
+        },
+      ],
+    });
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching the leaderboard.' });
+  }
 };
 
 exports.getUserResults = async (req, res) => {

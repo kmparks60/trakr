@@ -1,24 +1,24 @@
-// import axios from 'axios';
+import axios from 'axios';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function NavBar() {
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
 
 	useEffect(() => {
 		const token = localStorage.getItem('token');
 	}, [token]);
 
-	// const handleLogout = () => {
-	// 	localStorage.removeItem('token');
-    // 	navigate('/');
-	// };
+	const handleLogout = () => {
+		localStorage.removeItem('token');
+    	navigate('/');
+	};
 
 	return (
 		<nav className="bg-[#001F3F] text-white shadow-md py-4 px-8 flex justify-between items-center border-b-4 border-[#FFE8F0]">
-			{/* <div className="flex space-x-6">
+			<div className="flex space-x-6">
 				<button 
 					className="bg-[#FF8532] text-[#FFFFFF] py-2 px-6 rounded-md text-sm font-sans uppercase tracking-wider hover:bg-[#FFE8F0] hover:text-[#001F3F] focus:outline-none transform hover:scale-105 transition-all duration-300"
 					onClick={() => navigate('/')}
@@ -31,7 +31,7 @@ function NavBar() {
 				>
 					Leaderboard
 				</button>
-			</div> */}
+			</div>
 
 			<div className="flex-grow text-center">
 				<Link to="/" className="text-2xl font-semibold text-white">
@@ -43,8 +43,7 @@ function NavBar() {
 				</Link>
 			</div>
 
-			{/* Fixed width with a more defined flex setup */}
-			{/* <div className="flex items-center space-x-4 min-w-[200px] justify-end">
+			<div className="flex items-center space-x-4 min-w-[200px] justify-end">
 				{!token ? (
 					<>
 						<button 
@@ -68,7 +67,7 @@ function NavBar() {
 						Logout
 					</button>
 				)}
-			</div> */}
+			</div>
 		</nav>
 	);
 }

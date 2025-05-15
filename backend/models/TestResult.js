@@ -34,4 +34,7 @@ const TestResult = sequelize.define("TestResult", {
     tableName: "TestResults"
 });
 
+User.hasMany(TestResult, { foreignKey: "userId" });
+TestResult.belongsTo(User, { foreignKey: "userId" });
+
 module.exports = TestResult;

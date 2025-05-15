@@ -1,7 +1,5 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/database");
-const TestResult = require("./TestResult");
-
 
 const User = sequelize.define("User", {
     id: {
@@ -26,8 +24,5 @@ const User = sequelize.define("User", {
 }, {
     tableName: "Users",
 });
-
-User.hasMany(TestResult, { foreignKey: "id" });
-TestResult.belongsTo(User, { foreignKey: "id" });
 
 module.exports = User;

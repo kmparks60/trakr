@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { connectDB, sequelize } = require("./config/database");
+const testResults = require('./routes/testResults');
 require("dotenv").config();
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/testResults", require("./routes/testResults"));
 app.use("/api/users", require("./routes/userRoutes"));
+app.use('/api/testResults', testResults);
 
 const startServer = async () => {
     try {

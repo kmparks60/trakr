@@ -12,13 +12,17 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/');
+      await axios.post('http://localhost:5000/api/auth/register', {
+        username,
+        email,
+        password,
+      });
+
+      navigate('/login');
     } catch (err) {
       setError(err.response?.data?.msg || 'Registration failed');
     }
-  };
+    };
 
   return (
     <div className="flex justify-center min-h-screen bg-[#001F3F]">
